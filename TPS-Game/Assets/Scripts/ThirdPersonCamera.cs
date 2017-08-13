@@ -3,28 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ThirdPersonCamera : MonoBehaviour {
+    private readonly string MOUSEX = "Mouse X";
+    private readonly string MOUSEY = "Mouse Y";
+
     //need to follow a player
     [SerializeField]
     [Tooltip("Add the gameobject that the camera will follow in a TPS style")]
-    private Transform objectToFollowTransform;
+    private Transform target;
     [SerializeField]
     [Tooltip("The space that the camera will have with the  gameobject")]
     private float spaceBehindObject;
     [SerializeField]
     private Transform cameraTransform;
 
+    [SerializeField]
+    private float verticalSensitivity;
+
+    [SerializeField]
+    private float horizontalSensitivity;
+
+
+    private float angleX;
+    private float angleY;
+
     /// <summary>
     ///     At each update, the camera will place itself behind the player
+    ///     and rotate according the mouse movements
     /// </summary>
     private void Update()
     {
-        Vector3 objectToFollowPosition = objectToFollowTransform.position;
-        Vector3 objectToFollowDirection = objectToFollowTransform.forward;
-        Quaternion objectToFollowRotation = objectToFollowTransform.rotation;
+        //calculate the camera angle
+        float horizontalMove = Input.GetAxis(MOUSEX);
+        float verticalMove = Input.GetAxis(MOUSEY);
 
-        //Put the camera behind the player
-        cameraTransform.position = objectToFollowPosition - (objectToFollowDirection * spaceBehindObject);
-        //The camera film the player
-        cameraTransform.rotation = objectToFollowRotation;
+        angleX += horizontalMove * horizontalSensitivity;
+        angleY += (-verticalMove) * verticalSensitivity;
+
+        //execute the move
+        Vector3 direction = new Vector3(0, 0, -spaceBehindObject);
+        Quaternion rotation = Quaternion.Euler(angleY, angleX, 0);
+
+        cameraTransform.position = target.position + rotation * direction;
+        //the camera must look at the object after it moves
+        cameraTransform.LookAt(target);        
     }
 }
