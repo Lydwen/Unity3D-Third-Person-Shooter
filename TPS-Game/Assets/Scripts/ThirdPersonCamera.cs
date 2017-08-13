@@ -39,6 +39,8 @@ public class ThirdPersonCamera : MonoBehaviour {
         angleX += horizontalMove * horizontalSensitivity;
         angleY += (-verticalMove) * verticalSensitivity;
 
+        angleY = Mathf.Clamp(angleY, -80f, 80f);
+
         //execute the move
         Vector3 direction = new Vector3(0, 0, -spaceBehindObject);
         Quaternion rotation = Quaternion.Euler(angleY, angleX, 0);
